@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Application</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+    rel="stylesheet" 
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" 
+    crossorigin="anonymous">
+    <style>
+        body {
+            background: url('https://t4.ftcdn.net/jpg/01/58/70/21/360_F_158702129_PgQ9tL0KwHIqhNBlt4l4xD67zo24iT6y.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: 50%;
+        }
+    </style>
+</head>
+<body>
+    <script>
+async function getWeather() {
+    const apiKey = "ba75b4eaec3fcc60ffb7506fd5f6710d";
+    const city = document.getElementById("cityInput").value;
+
+    const apiUrl = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
+
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (data.cod === "404") {
+            document.getElementById("weatherInfo").innerText = "City not found";
+        } else {
+            let weatherData = {
+                city: data.name,
+                temperature: data.main.temp,
+                high: data.main.temp_max,
+                low: data.main.temp_min,
+                description: data.weather[0].description
+            };
+
+            document.getElementById("weatherInfo").innerText = `
+                City: ${weatherData.city}
+                Temperature: ${weatherData.temperature}°F
+                High: ${weatherData.high}°F
+                Low: ${weatherData.low}°F
+                Description: ${weatherData.description}
+            `;
+            updateBackgroundPhoto(weatherData.description);
+        }
+    } catch (error) {
+        console.error("Error fetching weather data:", error);
+        document.getElementById("weatherInfo").innerText = "An error occurred";
+    }
+}
+function updateBackgroundPhoto(weatherDescription) {
+    const body = document.querySelector("body");
+
+    // Define the background photo URLs for different weather descriptions
+    const backgroundPhotos = {
+        "clear sky": "url('https://images.unsplash.com/photo-1540308990836-5a7b1df6dc00?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGNsZWFyJTIwc2t5fGVufDB8MXwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60') width:",
+        "few clouds": "url('https://images.unsplash.com/photo-1613931189161-1f4d2660bd1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Y2xlYXIlMjBza3l8ZW58MHwxfDB8fHww&auto=format&fit=crop&w=500&q=60')",
+        "scattered clouds": "url('https://images.unsplash.com/photo-1562494400-5b335a653209?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fHdlYXRoZXJ8ZW58MHwxfDB8fHww&auto=format&fit=crop&w=500&q=60')",
+        "broken clouds": "url('https://images.unsplash.com/photo-1589323349573-95ac4bcfd483?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGJyb2tlbiUyMGNsb3Vkc3xlbnwwfDF8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60')",
+        "shower rain": "url('https://images.unsplash.com/photo-1525087740718-9e0f2c58c7ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzZ8fG5vdCUyMGludGVuc2UlMjByYWlufGVufDB8MXwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60')",
+        "rain": "url('https://images.unsplash.com/photo-1509635022432-0220ac12960b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8cmFpbnxlbnwwfDF8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60')",
+        "thunderstorm": "url('https://images.unsplash.com/photo-1492011221367-f47e3ccd77a0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHdlYXRoZXJ8ZW58MHwxfDB8fHww&auto=format&fit=crop&w=500&q=60')",
+        "snow": "url('https://images.unsplash.com/photo-1431036101494-66a36de47def?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8c25vd3xlbnwwfDF8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60')",
+        "mist": "url('https://images.unsplash.com/photo-1585508889431-a1d0d9c5a324?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bWlzdHxlbnwwfDF8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60')",
+        "heavy rain": "url('https://images.unsplash.com/photo-1515693516428-3c89b92d3220?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8aGVhdnklMjByYWlufGVufDB8MXwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60')",
+        "heavy intense rain": "url('https://images.unsplash.com/photo-1503429134808-fdf0cd4e1bfa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGhlYXZ5JTIwaW50ZW5zZSUyMHJhaW58ZW58MHwxfDB8fHww&auto=format&fit=crop&w=500&q=60')"
+    };
+
+    if (backgroundPhotos.hasOwnProperty(weatherDescription.toLowerCase())) {
+        const backgroundPhoto = backgroundPhotos[weatherDescription.toLowerCase()];
+        body.style.background = `${backgroundPhoto} no-repeat 50%/80%`;
+    }
+}
+    </script>
+    <div class="container-fluid">
+        <h1>Weather or Not</h1>
+    </div>
+    <input type="text" id="cityInput" placeholder="Enter city name">
+    <button onclick="getWeather()">Get Weather</button>
+
+    <div id="weatherInfo"></div>
+    
+</body>
+</html>
